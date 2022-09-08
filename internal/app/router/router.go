@@ -18,14 +18,25 @@ func NewRouter(bot *tgbotapi.BotAPI) *Router {
 }
 
 func (r *Router) HandleUpdate(update *tgbotapi.Update) {
-	if update.Message.IsCommand() {
-		switch update.Message.Command() {
-		case "help":
-			r.commander.List(update)
-		case "list":
-			r.commander.List(update)
-		case "get":
-			r.commander.List(update)
+	if update.CallbackQuery != nil {
+
+		r.bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data))
+	} else {
+		if update.Message.IsCommand() {
+			switch update.Message.Command() {
+			case "help":
+				r.commander.Help(update)
+			case "list":
+				r.commander.List(update)
+			case "get":
+				r.commander.Get(update)
+			case "create":
+				r.commander.Create(update)
+			case "delete":
+				r.commander.Delete(update)
+			default:
+				r.commander.Default(update)
+			}
 		}
 	}
 }
